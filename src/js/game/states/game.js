@@ -19,9 +19,13 @@ game.create = function () {
 
   // make the walls a lil' bouncy
   this.game.physics.arcade.enable(left_wall);
+  left_wall.body.immovable = true;
   this.game.physics.arcade.enable(right_wall);
+  right_wall.body.immovable = true;
   this.game.physics.arcade.enable(top_wall);
+  top_wall.body.immovable = true;
   this.game.physics.arcade.enable(bottom_wall);
+  bottom_wall.body.immovable = true;
 
   // introduce our hero
   player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'player');
@@ -31,7 +35,7 @@ game.create = function () {
   player.enableBody = true;
   player.body.drag.set(70);
   player.body.bounce.setTo(0.9, 0.9);
-  player.body.collideWorldBounds=true;
+  player.body.collideWorldBounds = false;
 
   // enable cursor keys
   cursors = this.input.keyboard.createCursorKeys();
@@ -45,13 +49,14 @@ game.update = function () {
     direction = directions[Math.floor(Math.random()*directions.length)];
   }
 
-  // player controls
+  // velocity controls
   if (cursors.up.isDown) {
       this.game.physics.arcade.accelerationFromRotation(player.rotation, 300, player.body.acceleration);
   } else {
       player.body.acceleration.set(0);
   }
 
+  // steering controls
   if (cursors.left.isDown) {
       player.body.angularVelocity = -300;
   } else if (cursors.right.isDown) {
@@ -60,6 +65,10 @@ game.update = function () {
       player.body.angularVelocity = 0;
   }
 
+  game.physics.arcade.collide(player, left_wall);
+	game.physics.arcade.collide(player, right_wall);
+  game.physics.arcade.collide(player, top_wall);
+  game.physics.arcade.collide(player, bottom_wall);
 
 }
 
