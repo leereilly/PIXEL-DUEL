@@ -65,11 +65,15 @@ game.update = function () {
       player.body.angularVelocity = 0;
   }
 
-  game.physics.arcade.collide(player, left_wall);
-	game.physics.arcade.collide(player, right_wall);
-  game.physics.arcade.collide(player, top_wall);
-  game.physics.arcade.collide(player, bottom_wall);
+  // this is what it's like when world collide
+  game.physics.arcade.collide(player, left_wall, someFunction, null);
+	game.physics.arcade.collide(player, right_wall, someFunction, null);
+  game.physics.arcade.collide(player, top_wall, someFunction, null);
+  game.physics.arcade.collide(player, bottom_wall, someFunction, null);
+}
 
+someFunction = function () {
+  game.sound.play('beep');
 }
 
 module.exports = game;
