@@ -78,6 +78,7 @@ someFunction = function () {
   starting_size = starting_size - 10;
   player.scale.setTo(starting_size, starting_size);
   game.sound.play('beep');
+  game.camera.shake(0.15, 20);
 }
 
 module.exports = game;
