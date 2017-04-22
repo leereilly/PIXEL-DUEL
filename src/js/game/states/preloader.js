@@ -2,7 +2,8 @@ var preloader = {};
 
 preloader.preload = function () {
   // images
-  this.game.load.image('player',      'images/player.png');
+  this.game.load.image('player1',     'images/player1.png');
+  this.game.load.image('player2',     'images/player2.png');
   this.game.load.image('left_wall',   'images/vertical-wall.png');
   this.game.load.image('right_wall',  'images/vertical-wall.png');
   this.game.load.image('top_wall',    'images/horizontal-wall.png');

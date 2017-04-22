@@ -1,10 +1,14 @@
 var game = {};
+var p1_color = 0x00AAAA; // cyan
+var p2_color = 0xAA00AA; // magenta
+var starting_size = 75;
 
 game.create = function () {
   // use arcade physics
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  starting_size = 500;
+  p1_starting_size = starting_size;
+  p2_starting_size = starting_size;
 
   // start the clock
   ticker = 0;
@@ -15,9 +19,9 @@ game.create = function () {
 
   // build some walls
   left_wall   = this.game.add.sprite(0, 0, 'left_wall');
-  right_wall  = this.game.add.sprite(665, 0, 'right_wall');
+  right_wall  = this.game.add.sprite(639, 0, 'right_wall');
   top_wall    = this.game.add.sprite(0, 0, 'top_wall');
-  bottom_wall = this.game.add.sprite(0, 665, 'bottom_wall');
+  bottom_wall = this.game.add.sprite(0, 199, 'bottom_wall');
 
   // make the walls a lil' bouncy
   this.game.physics.arcade.enable(left_wall);
@@ -29,18 +33,38 @@ game.create = function () {
   this.game.physics.arcade.enable(bottom_wall);
   bottom_wall.body.immovable = true;
 
-  // introduce our hero
-  player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'player');
-  player.anchor.setTo(0.5, 0.5);
-  player.scale.setTo(starting_size, starting_size);
-  this.game.physics.arcade.enable(player);
-  player.enableBody = true;
-  player.body.drag.set(70);
-  player.body.bounce.setTo(0.9, 0.9);
-  player.body.collideWorldBounds = false;
+  // introduce player1
+  player1 = this.game.add.sprite(this.game.world.centerX - (starting_size * 2), this.game.world.centerY, 'player1');
+  player1.anchor.setTo(0.5, 0.5);
+  player1.scale.setTo(starting_size, starting_size);
+  this.game.physics.arcade.enable(player1);
+  player1.enableBody = true;
+  player1.body.drag.set(70);
+  player1.body.bounce.setTo(0.9, 0.9);
+  player1.body.collideWorldBounds = false;
 
-  // enable cursor keys
+  // introduce player2
+  player2 = this.game.add.sprite(this.game.world.centerX + (starting_size * 2), this.game.world.centerY, 'player2');
+  player2.anchor.setTo(0.5, 0.5);
+  player2.scale.setTo(starting_size, starting_size);
+  this.game.physics.arcade.enable(player2);
+  player2.enableBody = true;
+  player2.body.drag.set(70);
+  player2.body.bounce.setTo(0.9, 0.9);
+  player2.body.collideWorldBounds = false;
+  player2.angle += 180;
+
+  // enable cursor keys for p1
   cursors = this.input.keyboard.createCursorKeys();
+
+  // enable WASD keys for p2
+  wasd = {
+    up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+    down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+    left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+    right: game.input.keyboard.addKey(Phaser.Keyboard.D),
+  };
+
 };
 
 game.update = function () {
@@ -51,34 +75,72 @@ game.update = function () {
     direction = directions[Math.floor(Math.random()*directions.length)];
   }
 
-  // velocity controls
+  // velocity controls for p1
+  if (wasd.up.isDown) {
+      this.game.physics.arcade.accelerationFromRotation(player1.rotation, 300, player1.body.acceleration);
+  } else {
+      player1.body.acceleration.set(0);
+  }
+
+  // velocity controls for p2
   if (cursors.up.isDown) {
-      this.game.physics.arcade.accelerationFromRotation(player.rotation, 300, player.body.acceleration);
+      this.game.physics.arcade.accelerationFromRotation(player2.rotation, 300, player2.body.acceleration);
   } else {
-      player.body.acceleration.set(0);
+      player2.body.acceleration.set(0);
   }
 
-  // steering controls
+  // steering controls for p1
+  if (wasd.left.isDown) {
+      player1.body.angularVelocity = -300;
+  } else if (wasd.right.isDown) {
+      player1.body.angularVelocity = 300;
+  } else {
+      player1.body.angularVelocity = 0;
+  }
+
+  // steering controls for p2
   if (cursors.left.isDown) {
-      player.body.angularVelocity = -300;
+      player2.body.angularVelocity = -300;
   } else if (cursors.right.isDown) {
-      player.body.angularVelocity = 300;
+      player2.body.angularVelocity = 300;
   } else {
-      player.body.angularVelocity = 0;
+      player2.body.angularVelocity = 0;
   }
 
-  // this is what it's like when world collide
-  game.physics.arcade.collide(player, left_wall, someFunction, null);
-	game.physics.arcade.collide(player, right_wall, someFunction, null);
-  game.physics.arcade.collide(player, top_wall, someFunction, null);
-  game.physics.arcade.collide(player, bottom_wall, someFunction, null);
+  // this is what it's like when world collide for p1
+  game.physics.arcade.collide(player1, left_wall, p1_score, null);
+	game.physics.arcade.collide(player1, right_wall, p1_score, null);
+  game.physics.arcade.collide(player1, top_wall, p1_score, null);
+  game.physics.arcade.collide(player1, bottom_wall, p1_score, null);
+
+  // this is what it's like when world collide for p2
+  game.physics.arcade.collide(player2, left_wall, p2_score, null);
+	game.physics.arcade.collide(player2, right_wall, p2_score, null);
+  game.physics.arcade.collide(player2, top_wall, p2_score, null);
+  game.physics.arcade.collide(player2, bottom_wall, p2_score, null);
+
+  game.physics.arcade.collide(player1, player2)
+
 }
 
-someFunction = function () {
-  starting_size = starting_size - 10;
-  player.scale.setTo(starting_size, starting_size);
+p1_score = function () {
+  p1_starting_size = p1_starting_size - 10;
+  if (p1_starting_size > 10) {
+    player1.scale.setTo(p1_starting_size, p1_starting_size);
+  }
   game.sound.play('beep');
-  game.camera.shake(0.15, 20);
+  game.camera.flash(p1_color, 200);
+  game.camera.shake(0.15, 200);
+}
+
+p2_score = function () {
+  p2_starting_size = p2_starting_size - 10;
+  if (p2_starting_size > 10) {
+    player2.scale.setTo(p2_starting_size, p2_starting_size);
+  }
+  game.sound.play('beep');
+  game.camera.flash(p2_color, 200);
+  game.camera.shake(0.15, 200);
 }
 
 module.exports = game;
