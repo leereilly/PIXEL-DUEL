@@ -16,7 +16,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-pngmin');
 
-  var productionBuild = !!(grunt.cli.tasks.length && grunt.cli.tasks[0] === 'build');
+  var productionBuild = !!(grunt.cli.tasks.length && grunt.cli.tasks[0] === 'docs');
 
   grunt.initConfig({
 
@@ -27,8 +27,8 @@ module.exports = function (grunt) {
     project: {
       src: 'src/js',
       js: '<%= project.src %>/game/{,*/}*.js',
-      dest: 'build/js',
-      bundle: 'build/js/app.min.js',
+      dest: 'docs/js',
+      bundle: 'docs/js/app.min.js',
       port: properties.port,
       banner:
         '/*\n' +
@@ -49,7 +49,7 @@ module.exports = function (grunt) {
       dev: {
         options: {
           port: '<%= project.port %>',
-          base: './build'
+          base: './docs'
         }
       }
     },
@@ -113,12 +113,12 @@ module.exports = function (grunt) {
     cacheBust: {
       options: {
         assets: ['audio/**', 'images/**', 'js/**', 'style/**'],
-        baseDir: './build/',
+        baseDir: './docs/',
         deleteOriginals: true,
         length: 5
       },
       files: {
-        src: ['./build/js/app.min.*', './build/index.html']
+        src: ['./docs/js/app.min.*', './docs/index.html']
       }
     },
 
@@ -131,21 +131,21 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'build/index.html': ['src/templates/index.jade']
+          'docs/index.html': ['src/templates/index.jade']
         }
       }
     },
 
     stylus: {
       compile: {
-        files: { 'build/style/index.css': ['src/style/index.styl'] },
+        files: { 'docs/style/index.css': ['src/style/index.styl'] },
           options: {
             sourcemaps: !productionBuild
         }
       }
     },
 
-    clean: ['./build/'],
+    clean: ['./docs/'],
 
     pngmin: {
       options: {
@@ -158,33 +158,33 @@ module.exports = function (grunt) {
 
     copy: {
       images: {
-        files: [ { expand: true, cwd: 'src/images/', src: ['**'], dest: 'build/images/' } ]
+        files: [ { expand: true, cwd: 'src/images/', src: ['**'], dest: 'docs/images/' } ]
       },
       audio: {
-        files: [ { expand: true, cwd: 'src/audio/', src: ['**'], dest: 'build/audio/' } ]
+        files: [ { expand: true, cwd: 'src/audio/', src: ['**'], dest: 'docs/audio/' } ]
       },
       phaserArcade: {
         files: [ {
           src: ['node_modules/phaser/build/custom/phaser-arcade-physics.js'],
-          dest: 'build/js/phaser.js'
+          dest: 'docs/js/phaser.js'
         } ]
       },
       phaserArcadeMin: {
         files: [ {
           src: ['node_modules/phaser/build/custom/phaser-arcade-physics.min.js'],
-          dest: 'build/js/phaser.js'
+          dest: 'docs/js/phaser.js'
         } ]
       },
       phaserP2: {
         files: [ {
           src: ['node_modules/phaser/build/phaser.js'],
-          dest: 'build/js/phaser.js'
+          dest: 'docs/js/phaser.js'
         } ]
       },
       phaserP2Min: {
         files: [ {
           src: ['node_modules/phaser/build/phaser.min.js'],
-          dest: 'build/js/phaser.js'
+          dest: 'docs/js/phaser.js'
         } ]
       }
     },
@@ -200,8 +200,8 @@ module.exports = function (grunt) {
 
     compress: {
       options: { archive: '<%= pkg.name %>.zip' },
-      zip: { files: [ { expand: true, cwd: 'build/', src: ['**/*'], dest: '<%= pkg.name %>/' } ] },
-      cocoon: { files: [ { expand: true, cwd: 'build/', src: ['**/*'] } ] }
+      zip: { files: [ { expand: true, cwd: 'docs/', src: ['**/*'], dest: '<%= pkg.name %>/' } ] },
+      cocoon: { files: [ { expand: true, cwd: 'docs/', src: ['**/*'] } ] }
     }
   });
 
