@@ -4,6 +4,8 @@ game.create = function () {
   // use arcade physics
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+  starting_size = 500;
+
   // start the clock
   ticker = 0;
 
@@ -30,7 +32,7 @@ game.create = function () {
   // introduce our hero
   player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'player');
   player.anchor.setTo(0.5, 0.5);
-  player.scale.setTo(200,200);
+  player.scale.setTo(starting_size, starting_size);
   this.game.physics.arcade.enable(player);
   player.enableBody = true;
   player.body.drag.set(70);
@@ -73,6 +75,8 @@ game.update = function () {
 }
 
 someFunction = function () {
+  starting_size = starting_size - 10;
+  player.scale.setTo(starting_size, starting_size);
   game.sound.play('beep');
 }
 
