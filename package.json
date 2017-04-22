@@ -1,0 +1,38 @@
+{
+  "name": "a-small-world",
+  "version": "0.0.1",
+  "description": "Ludum Dare 38 Entry",
+  "main": "build/js/app.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:leereilly/a-small-word.git"
+  },
+  "author": "Lee Reilly",
+  "license": "MIT",
+  "browserify-shim": {
+    "./src/js/lib/stats.min.js": "Stats"
+  },
+  "dependencies": {
+    "browserify": "^13.3.0",
+    "browserify-shim": "^3.8.12",
+    "grunt": "^1.0.0",
+    "grunt-browserify": "^5.0.0",
+    "grunt-cache-bust": "^1.1.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-compress": "^1.1.1",
+    "grunt-contrib-connect": "^1.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jade": "^1.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-stylus": "^1.2.0",
+    "grunt-contrib-uglify": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-open": "^0.2.3",
+    "grunt-pngmin": "^1.0.2",
+    "lodash": "^4.6.1",
+    "phaser": "^2.6.2"
+  }
+}
