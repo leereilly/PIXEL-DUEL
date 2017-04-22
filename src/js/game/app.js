@@ -4,6 +4,7 @@ var properties = require('./properties');
 var states = {
   boot: require('./states/boot.js'),
   preloader: require('./states/preloader.js'),
+  loading_screen: require('./states/loading_screen.js'),
   game: require('./states/game.js')
 };
 

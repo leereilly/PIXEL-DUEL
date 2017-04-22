@@ -9,12 +9,18 @@ preloader.preload = function () {
   this.game.load.image('top_wall',    'images/horizontal-wall.png');
   this.game.load.image('bottom_wall', 'images/horizontal-wall.png');
 
+  this.game.load.image('logo', 'images/logo.png');
+  this.game.load.image('raster', 'images/raster.png');
+
   // audio
   this.game.load.audio('beep', 'audio/beep.mp3');
+  this.game.load.audio('get_ready', 'audio/ready-set-pixelduel.mp3');
+  this.game.load.audio('pixel1_wins', 'audio/pixel-one-wins.mp3');
+  this.game.load.audio('pixel2_wins', 'audio/pixel-two-wins.mp3');
 };
 
 preloader.create = function () {
-  this.game.state.start('game');
+  this.game.state.start('loading_screen');
 };
 
 module.exports = preloader;

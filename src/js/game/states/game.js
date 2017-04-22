@@ -64,7 +64,6 @@ game.create = function () {
     left: game.input.keyboard.addKey(Phaser.Keyboard.A),
     right: game.input.keyboard.addKey(Phaser.Keyboard.D),
   };
-
 };
 
 game.update = function () {
