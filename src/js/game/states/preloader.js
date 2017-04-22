@@ -13,7 +13,8 @@ preloader.preload = function () {
   this.game.load.image('raster', 'images/raster.png');
 
   // audio
-  this.game.load.audio('beep', 'audio/beep.mp3');
+  this.game.load.audio('music', 'audio/music.wav');
+  this.game.load.audio('beep', 'audio/boom.mp3');
   this.game.load.audio('get_ready', 'audio/ready-set-pixelduel.mp3');
   this.game.load.audio('pixel1_wins', 'audio/pixel-one-wins.mp3');
   this.game.load.audio('pixel2_wins', 'audio/pixel-two-wins.mp3');

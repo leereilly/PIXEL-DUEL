@@ -7,8 +7,28 @@ game.create = function () {
   // use arcade physics
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+  music = this.game.add.audio('music');
+  music.loopFull(0.5);
+  //
+  // this.sfx.sonido.loopFull(0.8);
+
   p1_starting_size = starting_size;
   p2_starting_size = starting_size;
+
+  p1_text = game.add.text(200, 200, 'score: 0', { fontSize: '32px', fill: '#ff' });
+
+  p1_text = game.add.text(10, 10, "Score", {
+    font: "14px Courier new",
+    fill: "#55FFFF",
+    align: "left"
+  });
+
+  p2_text = game.add.text(570, 10, "Score", {
+    font: "14px Courier new",
+    fill: "#FF55FF",
+    align: "right"
+  });
+
 
   // start the clock
   ticker = 0;
@@ -136,7 +156,14 @@ p2_score = function () {
   p2_starting_size = p2_starting_size - 10;
   if (p2_starting_size > 10) {
     player2.scale.setTo(p2_starting_size, p2_starting_size);
+    binary = p2_starting_size.toString(2);
+    n = "00000000".substr(binary.length)+binary;
+    p2_text.setText(n);
+  } else {
+      game.sound.stopAll();
+      game.sound.play('pixel1_wins');
   }
+
   game.sound.play('beep');
   game.camera.flash(p2_color, 200);
   game.camera.shake(0.15, 200);
