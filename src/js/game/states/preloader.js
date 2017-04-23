@@ -18,6 +18,10 @@ preloader.preload = function () {
   this.game.load.audio('get_ready', 'audio/ready-set-pixelduel.mp3');
   this.game.load.audio('pixel1_wins', 'audio/pixel-one-wins.mp3');
   this.game.load.audio('pixel2_wins', 'audio/pixel-two-wins.mp3');
+  this.game.load.audio('left', 'audio/left.mp3');
+  this.game.load.audio('right', 'audio/right.mp3');
+  this.game.load.audio('up', 'audio/up.mp3');
+  this.game.load.audio('down', 'audio/down.mp3');
 };
 
 preloader.create = function () {

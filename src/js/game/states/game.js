@@ -2,9 +2,21 @@ var game = {};
 var p1_color = 0x00AAAA; // cyan
 var p2_color = 0xAA00AA; // magenta
 var starting_size = 75;
-
+var direction = "N/A";
 var filter;
 var sprite;
+
+
+var points_correct_wall   = 5;
+var points_incorrect_wall = 2;
+
+// visual effects
+var flash_timer = 300;
+var flash_timer_penalty = flash_timer * 10;
+var shake_timer = 300;
+var pointsAwarded = false;
+var gameOver = false;
+
 
 game.create = function () {
   // use arcade physics
@@ -43,21 +55,19 @@ game.create = function () {
 
   sprite.filters = [ filter ];
 
-  music = this.game.add.audio('music');
-  music.loopFull(0.5);
+  // music = this.game.add.audio('music');
+  // music.loopFull(0.5);
 
   p1_starting_size = starting_size;
   p2_starting_size = starting_size;
 
-  p1_text = game.add.text(200, 200, 'score: 0', { fontSize: '32px', fill: '#ff' });
-
-  p1_text = game.add.text(10, 10, "Score", {
+  p1_text = game.add.text(10, 10, p1_starting_size, {
     font: "14px Courier new",
     fill: "#55FFFF",
     align: "left"
   });
 
-  p2_text = game.add.text(570, 10, "Score", {
+  p2_text = game.add.text(570, 10, p2_starting_size, {
     font: "14px Courier new",
     fill: "#FF55FF",
     align: "right"
@@ -121,14 +131,28 @@ game.create = function () {
 };
 
 game.update = function () {
-
+  if (gameOver == true) {
+    return;
+  }
   filter.update(game.input.activePointer);
 
   // update the diddy ticker
   ticker = ticker + 1;
 
-  if (ticker % 100 == 0) {
+  if (ticker % 300 == 0) {
     direction = directions[Math.floor(Math.random()*directions.length)];
+    console.debug("DIRECTION now " + direction);
+    pointsAwarded = false;
+
+    if (direction == "up") {
+      game.sound.play('up');
+    } else if (direction == "down") {
+      game.sound.play('down');
+    } else if (direction == "left") {
+      game.sound.play('left');
+    } else if (direction == "right") {
+      game.sound.play('right');
+    }
   }
 
   // velocity controls for p1
@@ -164,46 +188,125 @@ game.update = function () {
   }
 
   // this is what it's like when world collide for p1
-  game.physics.arcade.collide(player1, left_wall, p1_score, null);
-	game.physics.arcade.collide(player1, right_wall, p1_score, null);
-  game.physics.arcade.collide(player1, top_wall, p1_score, null);
-  game.physics.arcade.collide(player1, bottom_wall, p1_score, null);
+  game.physics.arcade.collide(player1, left_wall, calculate_score, null);
+	game.physics.arcade.collide(player1, right_wall, calculate_score, null);
+  game.physics.arcade.collide(player1, top_wall, calculate_score, null);
+  game.physics.arcade.collide(player1, bottom_wall, calculate_score, null);
 
   // this is what it's like when world collide for p2
-  game.physics.arcade.collide(player2, left_wall, p2_score, null);
-	game.physics.arcade.collide(player2, right_wall, p2_score, null);
-  game.physics.arcade.collide(player2, top_wall, p2_score, null);
-  game.physics.arcade.collide(player2, bottom_wall, p2_score, null);
+  game.physics.arcade.collide(player2, left_wall, calculate_score, null);
+	game.physics.arcade.collide(player2, right_wall, calculate_score, null);
+  game.physics.arcade.collide(player2, top_wall, calculate_score, null);
+  game.physics.arcade.collide(player2, bottom_wall, calculate_score, null);
 
   game.physics.arcade.collide(player1, player2)
 
 }
 
-p1_score = function () {
-  p1_starting_size = p1_starting_size - 10;
-  if (p1_starting_size > 10) {
-    player1.scale.setTo(p1_starting_size, p1_starting_size);
-  }
-  game.sound.play('beep');
-  game.camera.flash(p1_color, 200);
-  game.camera.shake(0.15, 200);
-}
+calculate_score = function(player, wall) {
+  score = 0;
+  console.debug("Calculating score for " + player.key + " against wall " + wall.key);
 
-p2_score = function () {
-  p2_starting_size = p2_starting_size - 10;
-  if (p2_starting_size > 10) {
-    player2.scale.setTo(p2_starting_size, p2_starting_size);
-    binary = p2_starting_size.toString(2);
-    n = "00000000".substr(binary.length)+binary;
-    p2_text.setText(n);
-  } else {
+  if (wall.key == "top_wall") {
+    if (direction == "up" && !pointsAwarded) {
+      console.debug ("Top wall struck! + " + points_correct_wall);
+      pointsAwarded = true;
+      score = -points_correct_wall;
+    }
+
+    else {
+      console.debug ("Top wall incorrect! - " + points_incorrect_wall);
+      score = score + points_incorrect_wall;
+    }
+  }
+
+  else if (wall.key == "bottom_wall" && !pointsAwarded) {
+    if (direction == "down") {
+      console.debug ("Bottom wall struck! + " + points_correct_wall);
+      pointsAwarded = true;
+      score = -points_correct_wall;
+    }
+
+    else {
+      console.debug ("Bottom wall incorrect! - " + points_incorrect_wall)
+      score = score + points_incorrect_wall;
+    }
+  }
+
+  else if (wall.key == "left_wall" && !pointsAwarded) {
+    if (direction == "left") {
+      console.debug ("Left wall struck! + " + points_correct_wall);
+      pointsAwarded = true;
+      score = -points_correct_wall;
+    }
+
+    else {
+      console.debug ("Left wall incorrect! - " + points_incorrect_wall);
+      score = score + points_incorrect_wall;
+    }
+  }
+
+  else if (wall.key == "right_wall" && !pointsAwarded) {
+    if (direction == "right") {
+      console.debug ("Right wall struck! + " + points_correct_wall);
+      pointsAwarded = true;
+      score = -points_correct_wall;
+    }
+
+    else {
+      console.debug ("Right wall incorrect! - " + points_incorrect_wall);
+      score = score + points_incorrect_wall;
+    }
+  }
+
+  if (player.key == "player1") {
+    console.debug("Awarding points and resizing for player 1");
+    p1_starting_size = p1_starting_size + score;
+    player1.scale.setTo(p1_starting_size, p1_starting_size);
+    game.camera.flash(p1_color, flash_timer);
+    p1_binary = p1_starting_size.toString(2);
+    p1_n = "00000000".substr(p1_binary.length) + p1_binary;
+    p1_text.setText(p1_n);
+    game.sound.play('beep');
+    game.camera.shake(0.15, shake_timer);
+
+    if (p1_starting_size <= 0) {
+      p1_text.setText("WINNER!");
+      p2_text.setText("LOSER!");
       game.sound.stopAll();
       game.sound.play('pixel1_wins');
+      gameOver = true;
+    }
+
+    else {
+      p1_text.setText(p1_starting_size);
+      game.sound.play('beep');
+      game.camera.shake(0.15, shake_timer);
+    }
   }
 
-  game.sound.play('beep');
-  game.camera.flash(p2_color, 200);
-  game.camera.shake(0.15, 200);
+  else {
+    console.debug("Awarding points and resizing for player 2");
+    p2_starting_size = p2_starting_size + score;
+    player2.scale.setTo(p2_starting_size, p2_starting_size);
+    game.camera.flash(p2_color, flash_timer);
+    p2_binary = p2_starting_size.toString(2);
+    p2_n = "00000000".substr(p2_binary.length) + p2_binary;
+
+    if (p2_starting_size <= 0) {
+      p2_text.setText("WINNER!");
+      p1_text.setText("LOSER!");
+      game.sound.stopAll();
+      game.sound.play('pixel2_wins');
+      gameOver = true;
+    }
+
+    else {
+      p2_text.setText(p2_starting_size);
+      game.sound.play('beep');
+      game.camera.shake(0.15, shake_timer);
+    }
+  }
 }
 
 module.exports = game;
