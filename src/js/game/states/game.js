@@ -1,14 +1,19 @@
 var game = {};
 var p1_color = 0x00AAAA; // cyan
 var p2_color = 0xAA00AA; // magenta
-var starting_size = 75;
+var starting_size = 32;
 var direction = "N/A";
 var filter;
 var sprite;
+var speed = 4;
+var acceleration = 200;
+var max_speed = 250;
+var drag = 0;
+var velocity = 100;
 
 
-var points_correct_wall   = 5;
-var points_incorrect_wall = 2;
+var points_correct_wall   = 3;
+var points_incorrect_wall = 1;
 
 // visual effects
 var flash_timer = 300;
@@ -55,19 +60,23 @@ game.create = function () {
 
   sprite.filters = [ filter ];
 
-  // music = this.game.add.audio('music');
-  // music.loopFull(0.5);
+  music = this.game.add.audio('music');
+  music.loopFull(0.5);
+  music.volume = 0.2;
 
   p1_starting_size = starting_size;
   p2_starting_size = starting_size;
 
-  p1_text = game.add.text(10, 10, p1_starting_size, {
+  binary = starting_size.toString(2);
+  n = "00000000".substr(binary.length) + binary;
+
+  p1_text = game.add.text(10, 10, n, {
     font: "14px Courier new",
     fill: "#55FFFF",
     align: "left"
   });
 
-  p2_text = game.add.text(570, 10, p2_starting_size, {
+  p2_text = game.add.text(565, 10, n, {
     font: "14px Courier new",
     fill: "#FF55FF",
     align: "right"
@@ -104,8 +113,9 @@ game.create = function () {
   this.game.physics.arcade.enable(player1);
   player1.enableBody = true;
   player1.body.drag.set(70);
-  player1.body.bounce.setTo(0.9, 0.9);
+  player1.body.bounce.setTo(0.5);
   player1.body.collideWorldBounds = false;
+  player1.body.mass = 2;
 
   // introduce player2
   player2 = this.game.add.sprite(this.game.world.centerX + (starting_size * 2), this.game.world.centerY, 'player2');
@@ -114,9 +124,10 @@ game.create = function () {
   this.game.physics.arcade.enable(player2);
   player2.enableBody = true;
   player2.body.drag.set(70);
-  player2.body.bounce.setTo(0.9, 0.9);
+  player2.body.bounce.setTo(0.5);
   player2.body.collideWorldBounds = false;
   player2.angle += 180;
+  player2.body.mass = 2;
 
   // enable cursor keys for p1
   cursors = this.input.keyboard.createCursorKeys();
@@ -128,6 +139,9 @@ game.create = function () {
     left: game.input.keyboard.addKey(Phaser.Keyboard.A),
     right: game.input.keyboard.addKey(Phaser.Keyboard.D),
   };
+
+  player2.body.maxVelocity.setTo(max_speed, max_speed);
+  player2.body.drag.setTo(drag, drag);
 };
 
 game.update = function () {
@@ -157,14 +171,19 @@ game.update = function () {
 
   // velocity controls for p1
   if (wasd.up.isDown) {
-      this.game.physics.arcade.accelerationFromRotation(player1.rotation, 300, player1.body.acceleration);
+      // player1.body.acceleration.x = Math.cos(player1.rotation) * acceleration;
+      // player1.body.acceleration.y = Math.sin(player1.rotation) * acceleration;
+      this.game.physics.arcade.accelerationFromRotation(player1.rotation, 100, player1.body.acceleration);
   } else {
       player1.body.acceleration.set(0);
   }
 
   // velocity controls for p2
   if (cursors.up.isDown) {
-      this.game.physics.arcade.accelerationFromRotation(player2.rotation, 300, player2.body.acceleration);
+      // player2.body.acceleration.x = Math.cos(player2.rotation) * acceleration;
+      // player2.body.acceleration.y = Math.sin(player2.rotation) * acceleration;
+      this.game.physics.arcade.accelerationFromRotation(player2.rotation, 100, player2.body.acceleration);
+
   } else {
       player2.body.acceleration.set(0);
   }
@@ -205,6 +224,8 @@ game.update = function () {
 
 calculate_score = function(player, wall) {
   score = 0;
+  velocity = 0;
+
   console.debug("Calculating score for " + player.key + " against wall " + wall.key);
 
   if (wall.key == "top_wall") {
@@ -271,15 +292,19 @@ calculate_score = function(player, wall) {
     game.camera.shake(0.15, shake_timer);
 
     if (p1_starting_size <= 0) {
-      p1_text.setText("WINNER!");
-      p2_text.setText("LOSER!");
       game.sound.stopAll();
       game.sound.play('pixel1_wins');
       gameOver = true;
     }
 
+    else if (p1_starting_size > 200) {
+      game.sound.stopAll();
+      game.sound.play('pixel2_wins');
+      gameOver = true;
+    }
+
     else {
-      p1_text.setText(p1_starting_size);
+      p1_text.setText(p1_n);
       game.sound.play('beep');
       game.camera.shake(0.15, shake_timer);
     }
@@ -294,15 +319,19 @@ calculate_score = function(player, wall) {
     p2_n = "00000000".substr(p2_binary.length) + p2_binary;
 
     if (p2_starting_size <= 0) {
-      p2_text.setText("WINNER!");
-      p1_text.setText("LOSER!");
       game.sound.stopAll();
       game.sound.play('pixel2_wins');
       gameOver = true;
     }
 
+    else if (p2_starting_size > 200) {
+      game.sound.stopAll();
+      game.sound.play('pixel1_wins');
+      gameOver = true;
+    }
+
     else {
-      p2_text.setText(p2_starting_size);
+      p2_text.setText(p2_n);
       game.sound.play('beep');
       game.camera.shake(0.15, shake_timer);
     }
