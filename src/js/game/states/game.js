@@ -3,14 +3,48 @@ var p1_color = 0x00AAAA; // cyan
 var p2_color = 0xAA00AA; // magenta
 var starting_size = 75;
 
+var filter;
+var sprite;
+
 game.create = function () {
   // use arcade physics
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+  //  From http://glslsandbox.com/e#16133.0
+
+    var fragmentSrc = [
+
+      "precision mediump float;",
+
+      "uniform float     time;",
+      "uniform vec2      resolution;",
+
+      "#define PI 0.0001",
+
+      "void main( void ) {",
+
+          "vec2 p = ( gl_FragCoord.xy / resolution.xy ) - 0.5;",
+
+          "float sx = 0.2*sin( 25.0 * p.y - time * 5.);",
+
+          "float dy = 0.9/ ( 5. * abs(p.y - sx));",
+
+          "gl_FragColor = vec4( (p.x + 0.01) * dy, 0.01 * dy, dy-1.65, 5.0 );",
+
+      "}"
+  ];
+
+  filter = new Phaser.Filter(game, null, fragmentSrc);
+  filter.setResolution(640, 200);
+
+  sprite = game.add.sprite();
+  sprite.width = 2000;
+  sprite.height = 2000;
+
+  sprite.filters = [ filter ];
+
   music = this.game.add.audio('music');
   music.loopFull(0.5);
-  //
-  // this.sfx.sonido.loopFull(0.8);
 
   p1_starting_size = starting_size;
   p2_starting_size = starting_size;
@@ -87,6 +121,9 @@ game.create = function () {
 };
 
 game.update = function () {
+
+  filter.update(game.input.activePointer);
+
   // update the diddy ticker
   ticker = ticker + 1;
 
