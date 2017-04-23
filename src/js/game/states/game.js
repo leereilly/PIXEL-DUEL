@@ -12,8 +12,8 @@ var drag = 0;
 var velocity = 100;
 
 
-var points_correct_wall   = 3;
-var points_incorrect_wall = 1;
+var points_correct_wall   = 5;
+var points_incorrect_wall = 2;
 
 // visual effects
 var flash_timer = 300;
@@ -146,8 +146,9 @@ game.create = function () {
 
 game.update = function () {
   if (gameOver == true) {
-    return;
+      this.game.state.start('loading_screen');
   }
+
   filter.update(game.input.activePointer);
 
   // update the diddy ticker
