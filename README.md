@@ -6,7 +6,7 @@
 
 The latest release is playable on https://leereilly.itch.io/pixel-duel.
 
-The latest build in the `/docs` folder is always playable at http://leereilly.net/a-small-world/.
+The latest build in the `/docs` folder is always playable at http://leereilly.net/PIXEL-DUEL/.
 
 ## Building locally
 
