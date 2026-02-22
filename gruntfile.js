@@ -112,7 +112,7 @@ module.exports = function (grunt) {
 
     cacheBust: {
       options: {
-        assets: ['audio/**', 'images/**', 'js/**', 'style/**'],
+        assets: ['js/**', 'style/**'],
         baseDir: './docs/',
         deleteOriginals: true,
         length: 5
