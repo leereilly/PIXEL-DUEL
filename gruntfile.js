@@ -218,7 +218,7 @@ module.exports = function (grunt) {
     'watch'
   ]);
 
-  grunt.registerTask('build', [
+  grunt.registerTask('docs', [
     /*'jshint',
     */'clean',
     'browserify',

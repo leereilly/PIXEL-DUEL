@@ -18,7 +18,7 @@
   "dependencies": {
     "browserify": "^13.3.0",
     "browserify-shim": "^3.8.12",
-    "grunt": "^1.0.0",
+    "grunt": "^1.6.1",
     "grunt-browserify": "^5.0.0",
     "grunt-cache-bust": "^1.1.1",
     "grunt-contrib-clean": "^1.0.0",
